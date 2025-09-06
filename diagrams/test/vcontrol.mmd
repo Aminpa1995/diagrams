@@ -1,0 +1,40 @@
+flowchart LR
+    A["Backlog<br>تمام تسک‌های اولویت‌بندی شده"] --> B["In Progress<br>تسک‌های در حال توسعه"]
+    B <--> C["Pended<br>تسک‌های مسدود شده<br>نیازمند کامنت و پیگیری"]
+    B --> D["Committed<br>تسک آماده ریویو"]
+    D -- REJECT --> E["Rejected<br>تسک‌های رد شده<br>حتما باید کامنت داشته باشند"]
+    D -- APPROVE --> F["QA Test<br>تست کیفیت"]
+    F -- REJECT --> E
+    F -- APPROVE --> G["TeamLead Check<br>بررسی نهایی توسط تیم لید"]
+    G -- Case 1: نیاز به تایید PO --> H["PO Test<br>بررسی توسط Product Owner"]
+    H -- REJECT --> E
+    H -- APPROVE --> I["ReadyForMergePub<br>آماده ادغام و انتشار"]
+    G -- Case 2: نیاز به تایید CTO --> J["CTO Test<br>بررسی توسط CTO"]
+    J -- REJECT --> E
+    J -- APPROVE --> I
+    G -- Case 3: تایید مستقیم --> I
+    I --> K["Demo Test<br>تست نهایی روی نسخه دمو"]
+    K -- REJECT --> E
+    K -- APPROVE --> L["Merged<br>ادغام با شاخه اصلی"]
+    L --> M["Published<br>انتشار در محیط عملیاتی"]
+    M --> N["Checked<br>تست نهایی توسط دولوپر و PO"]
+    N -- REJECT --> E
+    N -- APPROVE --> O["Done<br>تسک تکمیل شده"]
+    E --> B
+
+    %% استایل ساده برای رنگ پس‌زمینه همه نودها (آبی خیلی روشن)
+    style A fill:#e3f2fd
+    style B fill:#e3f2fd
+    style C fill:#e3f2fd
+    style D fill:#e3f2fd
+    style E fill:#e3f2fd
+    style F fill:#e3f2fd
+    style G fill:#e3f2fd
+    style H fill:#e3f2fd
+    style I fill:#e3f2fd
+    style J fill:#e3f2fd
+    style K fill:#e3f2fd
+    style L fill:#e3f2fd
+    style M fill:#e3f2fd
+    style N fill:#e3f2fd
+    style O fill:#e3f2fd

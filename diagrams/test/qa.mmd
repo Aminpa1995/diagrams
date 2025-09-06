@@ -3,12 +3,19 @@ config:
   layout: dagre
 ---
 flowchart TD
-    A["TEST"] --> B["Automation"] & H["Usability Testing - Semi-Manual"] & n1["Manual"] & n4["Security"]
-    B --> C["Performance & Load Testing"] & G["Chaos & Reliability Testing - Automated"] & E["Accessibility Testing - Automated"] & D["Compatibility Testing - Automated"] & F["Database Testing - Automated"] & n2@{ label: "<span style=\"background-color:\">API</span>" } & n3@{ label: "<span style=\"background-color:\">UI</span>" }
-    n1@{ shape: rect}
-    n4@{ shape: rect}
-    n2@{ shape: rect}
-    n3@{ shape: rect}
+    A["TEST"] --> B["Automation"]
+    A --> H["Usability Testing - Semi-Manual"]
+    A --> n1["Manual"]
+    A --> n4["Security"]
+
+    B --> C["Performance & Load Testing"]
+    B --> G["Chaos & Reliability Testing - Automated"]
+    B --> E["Accessibility Testing - Automated"]
+    B --> D["Compatibility Testing - Automated"]
+    B --> F["Database Testing - Automated"]
+    B --> n2["API Testing"]
+    B --> n3["UI Testing"]
+
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#bbf,stroke:#333,stroke-width:2px
     style H fill:#ffb,stroke:#333,stroke-width:2px,stroke-dasharray: 0

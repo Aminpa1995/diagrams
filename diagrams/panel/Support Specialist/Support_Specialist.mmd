@@ -1,0 +1,59 @@
+flowchart TD
+    A["شروع: ثبت درخواست توسط کاربر در سایت"] --> B["تکمیل اطلاعات توسط کاربر (عکس و جزئیات)"]
+    B --> C["اعتبارسنجی اولیه اطلاعات"]
+    C --> D{"نوع پرداخت چیست؟"}
+    D -- نقدی --> E["پرداخت نقدی"]
+    E --> F["وضعیت: پرداخت شده"]
+    F --> O["بررسی توسط کارشناس پشتیبانی"]
+    D -- اقساطی --> G["پرداخت پیش قسط"]
+    G --> H["وضعیت: در انتظار اعتبارسنجی"]
+    H --> I["وضعیت: در انتظار تأیید کارشناس"]
+    I --> J{"بررسی کارشناس"}
+    J -- تایید شد --> K["وضعیت: پرداخت شده"]
+    K --> O
+    J -- رد شد --> L["وضعیت: نیاز به تعیین نوع عودت"]
+    L --> M{"کاربر نوع عودت را تعیین می‌کند"}
+    O --> P{"آیا مشکل یا نقص وجود دارد؟"}
+    P -- بله --> Q["وضعیت: در انتظار عودت"]
+    P -- خیر، اما نیاز به پیگیری --> R["وضعیت: در انتظار پیگیری"]
+    P -- خیر، بدون اشکال --> W["ارجاع درخواست"]
+    Q --> T{"آیا مشکل رفع شد؟"}
+    R --> S["رفع مشکل/تکمیل اطلاعات یا مراجعه به مشتری"]
+    S --> T
+    T -- بله --> V["در صورت رفع: ادامه بررسی"]
+    V --> W
+    T -- خیر --> U["وضعیت: رد شده"]
+    U --> X["پایان نقش کارشناس پشتیبانی"]
+    M --> X
+    W --> X
+
+    classDef start fill:#2ecc71,color:white,stroke-width:0
+    classDef process fill:#3498db,color:white,stroke-width:0
+    classDef decision fill:#e74c3c,color:white,stroke-width:0
+    classDef status fill:#f39c12,color:white,stroke-width:0
+    classDef payment fill:#9b59b6,color:white,stroke-width:0
+    classDef endNode fill:#34495e,color:white,stroke-width:0
+
+    A:::start
+    B:::process
+    C:::process
+    D:::decision
+    E:::payment
+    F:::status
+    O:::process
+    G:::payment
+    H:::status
+    I:::status
+    J:::process
+    K:::status
+    L:::status
+    M:::decision
+    P:::decision
+    Q:::status
+    R:::status
+    W:::process
+    T:::decision
+    S:::process
+    V:::process
+    U:::status
+    X:::endNode
