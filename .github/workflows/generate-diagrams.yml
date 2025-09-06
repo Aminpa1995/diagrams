@@ -1,4 +1,3 @@
-# .github/workflows/generate-diagrams.yml
 name: Generate Mermaid Diagrams
 
 on:
@@ -17,13 +16,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate Mermaid diagrams
-        uses: orgoro/mermaid@v5.3.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          input: 'diagrams/**/*.mmd'
-          output: 'diagrams/**/*.png'
-          theme: 'dark'
-          background: 'transparent'
+          node-version: '18'
+
+      - name: Install mermaid-cli
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Generate Mermaid diagrams
+        run: |
+          for mmd_file in diagrams/**/*.mmd; do
+            if [ -f "$mmd_file" ]; then
+              output_file="${mmd_file%.mmd}.png"
+              mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent
+            fi
+          done
 
       - name: Commit and push generated images
         run: |
