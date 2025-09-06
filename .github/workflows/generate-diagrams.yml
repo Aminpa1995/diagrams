@@ -1,81 +1,81 @@
-name: Generate Mermaid Diagrams
-
-on:
-  push:
-    paths:
-      - 'diagrams/**/*.mmd'
-  workflow_dispatch:
-
-jobs:
-  generate-diagrams:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install mermaid-cli
-        run: npm install -g @mermaid-js/mermaid-cli
-
-      - name: Debug - List files
-        run: |
-          echo "Current directory structure:"
-          ls -la
-          echo "Diagrams directory content:"
-          ls -la diagrams/ || echo "No diagrams directory found"
-          echo "Looking for .mmd files:"
-          find . -name "*.mmd" -type f || echo "No .mmd files found"
-
-      - name: Generate Mermaid diagrams
-        run: |
-          # Create puppeteer config file
-          echo '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}' > puppeteer-config.json
-          
-          # Find and process .mmd files
-          find . -name "*.mmd" -type f | while read mmd_file; do
-            output_file="${mmd_file%.mmd}.png"
-            echo "Generating: $mmd_file -> $output_file"
-            mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent -p puppeteer-config.json
-            
-            # Check if file was created
-            if [ -f "$output_file" ]; then
-              echo "✓ Successfully created: $output_file"
-            else
-              echo "✗ Failed to create: $output_file"
-            fi
-          done
-          
-          # Clean up config file
-          rm -f puppeteer-config.json
-
-      - name: Verify generated images
-        run: |
-          echo "All generated PNG files:"
-          find . -name "*.png" -type f || echo "No PNG files found"
-          echo "Diagrams directory content after generation:"
-          ls -la diagrams/ || echo "No diagrams directory"
-
-      - name: Commit and push generated images
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Add all PNG files
-          find . -name "*.png" -type f | head -5 | xargs git add 2>/dev/null || true
-          git add diagrams/ || true
-          
-          if git status --porcelain | grep -q "M"; then
-            git commit -m "Auto-generated diagram images [skip ci]"
-            git push
-          else
-            echo "No changes to commit"
-            echo "Current git status:"
-            git status
-          fi
+#name: Generate Mermaid Diagrams
+#
+#on:
+#  push:
+#    paths:
+#      - 'diagrams/**/*.mmd'
+#  workflow_dispatch:
+#
+#jobs:
+#  generate-diagrams:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '18'
+#
+#      - name: Install mermaid-cli
+#        run: npm install -g @mermaid-js/mermaid-cli
+#
+#      - name: Debug - List files
+#        run: |
+#          echo "Current directory structure:"
+#          ls -la
+#          echo "Diagrams directory content:"
+#          ls -la diagrams/ || echo "No diagrams directory found"
+#          echo "Looking for .mmd files:"
+#          find . -name "*.mmd" -type f || echo "No .mmd files found"
+#
+#      - name: Generate Mermaid diagrams
+#        run: |
+#          # Create puppeteer config file
+#          echo '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}' > puppeteer-config.json
+#
+#          # Find and process .mmd files
+#          find . -name "*.mmd" -type f | while read mmd_file; do
+#            output_file="${mmd_file%.mmd}.png"
+#            echo "Generating: $mmd_file -> $output_file"
+#            mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent -p puppeteer-config.json
+#
+#            # Check if file was created
+#            if [ -f "$output_file" ]; then
+#              echo "✓ Successfully created: $output_file"
+#            else
+#              echo "✗ Failed to create: $output_file"
+#            fi
+#          done
+#
+#          # Clean up config file
+#          rm -f puppeteer-config.json
+#
+#      - name: Verify generated images
+#        run: |
+#          echo "All generated PNG files:"
+#          find . -name "*.png" -type f || echo "No PNG files found"
+#          echo "Diagrams directory content after generation:"
+#          ls -la diagrams/ || echo "No diagrams directory"
+#
+#      - name: Commit and push generated images
+#        run: |
+#          git config --local user.name "github-actions[bot]"
+#          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+#
+#          # Add all PNG files
+#          find . -name "*.png" -type f | head -5 | xargs git add 2>/dev/null || true
+#          git add diagrams/ || true
+#
+#          if git status --porcelain | grep -q "M"; then
+#            git commit -m "Auto-generated diagram images [skip ci]"
+#            git push
+#          else
+#            echo "No changes to commit"
+#            echo "Current git status:"
+#            git status
+#          fi
