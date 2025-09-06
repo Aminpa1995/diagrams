@@ -4,17 +4,17 @@ name: Generate Mermaid Diagrams
 on:
   push:
     paths:
-      - 'diagrams/**/*.mmd'    # فقط وقتی فایل‌های .mmd تغییر کنند
+      - 'diagrams/**/*.mmd'
   pull_request:
     paths:
       - 'diagrams/**/*.mmd'
-  workflow_dispatch:           # امکان اجرای دستی
+  workflow_dispatch:
 
 jobs:
   generate-diagrams:
     runs-on: ubuntu-latest
     permissions:
-      contents: write         # اجازه commit و push
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -22,29 +22,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
       - name: Install Mermaid CLI
-        run: npm install -g @mermaid-js/mermaid-cli
-
-      - name: Find and process Mermaid files
         run: |
+          # نصب مستقیم بدون استفاده از npm cache
+          npm install -g @mermaid-js/mermaid-cli --no-fund --no-audit
+
+      - name: Generate diagrams
+        run: |
+          # پیدا کردن و پردازش تمام فایل‌های mermaid
           find diagrams -name "*.mmd" -type f | while read -r mmd_file; do
-            echo "Processing: $mmd_file"
+            echo "🔄 Processing: $mmd_file"
             
             # تولید PNG
             png_file="${mmd_file%.mmd}.png"
-            mmdc -i "$mmd_file" -o "$png_file" -t dark -b transparent
+            mmdc -i "$mmd_file" -o "$png_file" -t dark -b transparent --quiet
             
             # تولید SVG (اختیاری)
             svg_file="${mmd_file%.mmd}.svg"
-            mmdc -i "$mmd_file" -o "$svg_file"
+            mmdc -i "$mmd_file" -o "$svg_file" --quiet
             
-            echo "Generated: $png_file and $svg_file"
+            echo "✅ Generated: $png_file and $svg_file"
           done
 
       - name: Commit and push generated images
@@ -52,11 +49,14 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           
-          # بررسی تغییرات
-          if git diff --quiet --exit-code; then
-            echo "No changes to commit"
+          # اضافه کردن فایل‌های تولید شده
+          git add diagrams/
+          
+          # بررسی اگر تغییری وجود دارد
+          if git diff --staged --quiet; then
+            echo "🤷‍♂️ No changes to commit"
           else
-            git add diagrams/
-            git commit -m "chore: auto-generate diagram images [skip ci]"
+            git commit -m "🔁 Auto-generated diagram images [skip ci]"
             git push
+            echo "🚀 Changes pushed successfully"
           fi
