@@ -1,5 +1,5 @@
-# .github/workflows/generate-diagrams-docker.yml
-name: Generate Mermaid Diagrams with Docker
+# .github/workflows/generate-diagrams.yml
+name: Generate Mermaid Diagrams
 
 on:
   push:
@@ -17,30 +17,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate diagrams using Docker
-        run: |
-          # استفاده از Docker برای تولید دیاگرام‌ها
-          find diagrams -name "*.mmd" -type f | while read -r mmd_file; do
-            echo "🔄 Processing: $mmd_file"
-            
-            # تولید PNG با Docker
-            png_file="${mmd_file%.mmd}.png"
-            docker run --rm -v $(pwd):/data mermaidcli/mermaid-cli \
-              -i "/data/$mmd_file" \
-              -o "/data/$png_file" \
-              -t dark \
-              -b transparent
-            
-            echo "✅ Generated: $png_file"
-          done
+      - name: Generate diagrams using dedicated action
+        uses: cloudformatic/mermaid-action@v1.0.0
+        with:
+          input: 'diagrams/**/*.mmd'
+          output: 'diagrams/**/*.png'
+          theme: 'dark'
+          background: 'transparent'
 
-      - name: Commit and push changes
+      - name: Commit and push generated images
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add diagrams/
           
-          if git diff --staged --quiet; then
+          # Check if there are changes to commit
+          if [ -z "$(git status --porcelain)" ]; then
             echo "No changes to commit"
           else
             git commit -m "Auto-generated diagram images [skip ci]"
