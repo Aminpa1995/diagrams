@@ -17,21 +17,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate diagrams using dedicated action
-        uses: cloudformatic/mermaid-action@v1.0.0
-        with:
-          input: 'diagrams/**/*.mmd'
-          output: 'diagrams/**/*.png'
-          theme: 'dark'
-          background: 'transparent'
+      - name: Generate diagrams with Docker
+        run: |
+          # Create a simple script to generate diagrams
+          cat > generate.sh << 'EOF'
+          #!/bin/bash
+          find diagrams -name "*.mmd" | while read file; do
+            echo "Processing $file"
+            png_file="${file%.mmd}.png"
+            docker run --rm -v $(pwd):/data minlag/mermaid-cli \
+              -i "/data/$file" \
+              -o "/data/$png_file" \
+              -t dark \
+              -b transparent
+          done
+          EOF
+          
+          chmod +x generate.sh
+          ./generate.sh
 
-      - name: Commit and push generated images
+      - name: Commit and push changes
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add diagrams/
           
-          # Check if there are changes to commit
           if [ -z "$(git status --porcelain)" ]; then
             echo "No changes to commit"
           else
