@@ -29,9 +29,12 @@ jobs:
           for mmd_file in diagrams/**/*.mmd; do
             if [ -f "$mmd_file" ]; then
               output_file="${mmd_file%.mmd}.png"
-              mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent --puppeteerConfig '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}'
+              echo "Generating: $mmd_file -> $output_file"
+              mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent
             fi
           done
+        env:
+          PUPPETEER_ARGS: '--no-sandbox --disable-setuid-sandbox'
 
       - name: Commit and push generated images
         run: |
