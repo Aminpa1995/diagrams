@@ -1,0 +1,23 @@
+---
+config:
+  layout: dagre
+---
+flowchart TD
+    A["TEST"] --> B["Automation"] & H["Usability Testing - Semi-Manual"] & n1["Manual"] & n4["Security"]
+    B --> C["Performance & Load Testing"] & G["Chaos & Reliability Testing - Automated"] & E["Accessibility Testing - Automated"] & D["Compatibility Testing - Automated"] & F["Database Testing - Automated"] & n2@{ label: "<span style=\"background-color:\">API</span>" } & n3@{ label: "<span style=\"background-color:\">UI</span>" }
+    n1@{ shape: rect}
+    n4@{ shape: rect}
+    n2@{ shape: rect}
+    n3@{ shape: rect}
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style H fill:#ffb,stroke:#333,stroke-width:2px,stroke-dasharray: 0
+    style n1 fill:#f9f,stroke:#333,stroke-width:2px
+    style n4 fill:#FF6D00,stroke:#333,stroke-width:2px
+    style C fill:#bfb,stroke:#333,stroke-width:2px
+    style G fill:#aaf,stroke:#333,stroke-width:2px
+    style E fill:#aff,stroke:#333,stroke-width:2px
+    style D fill:#fbb,stroke:#333,stroke-width:2px
+    style F fill:#FFD600,stroke:#333,stroke-width:2px
+    style n2 fill:#FFE0B2,stroke:#333,stroke-width:2px
+    style n3 fill:#FFF9C4,stroke:#333,stroke-width:2px
