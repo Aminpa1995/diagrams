@@ -29,7 +29,7 @@ jobs:
           for mmd_file in diagrams/**/*.mmd; do
             if [ -f "$mmd_file" ]; then
               output_file="${mmd_file%.mmd}.png"
-              mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent
+              mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent --puppeteerConfig '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}'
             fi
           done
 
