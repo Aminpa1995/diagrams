@@ -24,43 +24,58 @@ jobs:
       - name: Install mermaid-cli
         run: npm install -g @mermaid-js/mermaid-cli
 
+      - name: Debug - List files
+        run: |
+          echo "Current directory structure:"
+          ls -la
+          echo "Diagrams directory content:"
+          ls -la diagrams/ || echo "No diagrams directory found"
+          echo "Looking for .mmd files:"
+          find . -name "*.mmd" -type f || echo "No .mmd files found"
+
       - name: Generate Mermaid diagrams
         run: |
           # Create puppeteer config file
           echo '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}' > puppeteer-config.json
           
-          # Create diagrams directory if it doesn't exist
-          mkdir -p diagrams
-          
-          # Generate diagrams
-          for mmd_file in diagrams/**/*.mmd; do
-            if [ -f "$mmd_file" ]; then
-              output_file="${mmd_file%.mmd}.png"
-              echo "Generating: $mmd_file -> $output_file"
-              mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent -p puppeteer-config.json
+          # Find and process .mmd files
+          find . -name "*.mmd" -type f | while read mmd_file; do
+            output_file="${mmd_file%.mmd}.png"
+            echo "Generating: $mmd_file -> $output_file"
+            mmdc -i "$mmd_file" -o "$output_file" -t dark -b transparent -p puppeteer-config.json
+            
+            # Check if file was created
+            if [ -f "$output_file" ]; then
+              echo "✓ Successfully created: $output_file"
             else
-              echo "No .mmd files found or directory doesn't exist"
+              echo "✗ Failed to create: $output_file"
             fi
           done
           
           # Clean up config file
           rm -f puppeteer-config.json
 
-      - name: List generated files
+      - name: Verify generated images
         run: |
-          echo "Generated files:"
+          echo "All generated PNG files:"
+          find . -name "*.png" -type f || echo "No PNG files found"
+          echo "Diagrams directory content after generation:"
           ls -la diagrams/ || echo "No diagrams directory"
-          find diagrams/ -name "*.png" -type f | head -10 || echo "No PNG files found"
 
       - name: Commit and push generated images
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add diagrams/
+          
+          # Add all PNG files
+          find . -name "*.png" -type f | head -5 | xargs git add 2>/dev/null || true
+          git add diagrams/ || true
           
           if git status --porcelain | grep -q "M"; then
             git commit -m "Auto-generated diagram images [skip ci]"
             git push
           else
             echo "No changes to commit"
+            echo "Current git status:"
+            git status
           fi
